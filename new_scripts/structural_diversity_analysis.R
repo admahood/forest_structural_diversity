@@ -74,7 +74,7 @@ write.table(summary(final_mods$cover1))
 
 ####################################
 
-#regression with exotic cover or SR (response) as a function of structural diversity (predictors)
+#regression with exotic cover (response) as a function of structural diversity (predictors)
 lmcover1 = lm(exotic_cover~ max.canopy.ht.aop, data = strdiv)
 summary (lmcover1)
 #significantly related
@@ -96,7 +96,7 @@ summary (lmcover5)
 #not sig related
 
 
-#regression with exotic SR 
+#regression with exotic SR (response)
 lmcover6 = lm(exotic_richness~ max.canopy.ht.aop, data = strdiv)
 summary (lmcover6)
 #not sig related
@@ -120,9 +120,13 @@ summary (lmcover10)
 
 
 #####
-#plotting
-ggplot(strdiv, aes(x=max.canopy.ht.aop, y=exotic_cover)) + 
-  geom_point()
+#plots with invasive cover
+ggplot(strdiv, aes(x=max.canopy.ht.aop, y=exotic_cover, color = new_class)) + 
+  geom_point() + 
+  xlab("Maximum canopy height") + 
+  ylab("Invasive plant % cover") + 
+  labs(color='Forest Type') 
+
 
 ggplot(strdiv, aes(x=mean.max.canopy.ht.aop, y=exotic_cover)) + 
   geom_point()
@@ -142,7 +146,7 @@ ggplot(strdiv, aes(x=sd.sd.aop, y=exotic_cover)) +
 
 
 
-
+#plots with invasive richness
 ggplot(strdiv, aes(x=max.canopy.ht.aop, y=exotic_richness)) + 
   geom_point()
 
