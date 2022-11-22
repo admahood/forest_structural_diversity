@@ -7,7 +7,7 @@ library(neonUtilities)
 library(dplyr)
 
 coverdata <- read.csv("new_scripts/output/prelim_cover.csv")
-veg_types <- read.csv('field-sites.csv')
+veg_types <- read.csv('data/field-sites.csv')
 plot_data_table <- read.csv("new_scripts/output/plot_data_table.csv")
 lidar_data <- read.csv("new_scripts/output/lidar_structural_metrics.csv")
 
