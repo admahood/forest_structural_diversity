@@ -5,7 +5,7 @@ library(dplyr)
 source("helper.R")
 
 data <- read.csv("NEON_sites_dates_for_cover.csv", colClasses = "character")
-coverdata <- read.csv("prelim_cover.csv")
+coverdata <- read.csv("new_scripts/output/prelim_cover.csv")
 all_neon_plot_centroids_data <- read.csv("All_NEON_TOS_Plot_Centroids_V8.csv", colClasses = "character")
 
 plot_data_table = data.frame()
