@@ -7,7 +7,7 @@ library(neonUtilities)
 
 root <- paste0(getwd(), "/")
 
-data <- read.csv(paste0(root, "NEON_sites_dates_for_cover.csv"))
+data <- read.csv(paste0(root, "data/NEON_sites_dates_for_cover.csv"))
 #print(data)
 
 tot_cover = data.frame()
