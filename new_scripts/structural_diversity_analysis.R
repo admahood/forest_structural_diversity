@@ -128,17 +128,29 @@ ggplot(strdiv, aes(x=max.canopy.ht.aop, y=exotic_cover, color = new_class)) +
   labs(color='Forest Type') 
 
 
-ggplot(strdiv, aes(x=mean.max.canopy.ht.aop, y=exotic_cover)) + 
-  geom_point()
+ggplot(strdiv, aes(x=mean.max.canopy.ht.aop, y=exotic_cover, color = new_class)) + 
+  geom_point() +
+  xlab("xlab") + 
+  ylab("Invasive plant % cover") + 
+  labs(color='Forest Type')
 
 ggplot(strdiv, aes(x=deepgap.fraction.aop, y=exotic_cover)) + 
-  geom_point()
+  geom_point() + 
+  xlab("xlab") + 
+  ylab("Invasive plant % cover") + 
+  labs(color='Forest Type')
 
 ggplot(strdiv, aes(x=vert.sd.aop, y=exotic_cover)) + 
-  geom_point()
+  geom_point() +
+  xlab("xlab") + 
+  ylab("Invasive plant % cover") + 
+  labs(color='Forest Type')
 
 ggplot(strdiv, aes(x=sd.sd.aop, y=exotic_cover)) + 
-  geom_point()
+  geom_point() +
+  xlab("xlab") + 
+  ylab("Invasive plant % cover") + 
+  labs(color='Forest Type')
 
 
 
