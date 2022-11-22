@@ -2,7 +2,7 @@ library(lidR)
 library(gstat)
 library(neonUtilities)
 library(dplyr)
-source("helper.R")
+source("new_scripts/helper.R")
 
 data <- read.csv("data/NEON_sites_dates_for_cover.csv", colClasses = "character")
 coverdata <- read.csv("new_scripts/output/prelim_cover.csv")
