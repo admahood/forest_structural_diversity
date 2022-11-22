@@ -30,4 +30,4 @@ plot_data_table <- plot_data_table %>% rename(latitude = "slice$latitude",
                                               easting = "slice$easting",
                                               northing = "slice$northing")
 
-write.table(plot_data_table, file = "plot_data_table.csv", sep = ",", row.names = FALSE)
+write.table(plot_data_table, file = "new_scripts/output/plot_data_table.csv", sep = ",", row.names = FALSE)

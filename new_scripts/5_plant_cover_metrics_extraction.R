@@ -117,9 +117,9 @@ tot_table_plots <- tot_table_plots %>%
 tot_table_plots <- tot_table_plots[, c(1, 10, 11, 12 , 2:9, 13)]
 
 #export table of plant cover by plot 
-write.table(tot_table_plots, file = "cover_by_plot.csv", sep = ",", row.names = FALSE)
+write.table(tot_table_plots, file = "new_scripts/outputcover_by_plot.csv", sep = ",", row.names = FALSE)
 
 structural_metrics <- left_join(tot_table_plots, lidar_data, by=c("sitemonthyear", "siteID", "monthyear", "easting", "northing", "plotID"))
 
 #export combined table of plant cover and lidar data by plot 
-write.table(structural_metrics, file = "structural_metrics_by_plot.csv", sep = ",", row.names = FALSE)
+write.table(structural_metrics, file = "new_scripts/output/structural_metrics_by_plot.csv", sep = ",", row.names = FALSE)

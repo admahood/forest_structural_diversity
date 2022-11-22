@@ -34,4 +34,4 @@ for (i in 1:nrow(data)) {
   }
 }
 
-write.table(tot_cover, file = "prelim_cover.csv", sep = ",", row.names = FALSE)
+write.table(tot_cover, file = "new_scripts/output/prelim_cover.csv", sep = ",", row.names = FALSE)
