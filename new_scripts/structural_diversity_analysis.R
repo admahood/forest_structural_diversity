@@ -77,11 +77,11 @@ write.table(summary(final_mods$cover1))
 #regression with exotic cover (response) as a function of structural diversity (predictors)
 lmcover1 = lm(exotic_cover~ max.canopy.ht.aop, data = strdiv)
 summary (lmcover1)
-#significantly related
+#significantly (-) related
 
 lmcover2 = lm(exotic_cover~ mean.max.canopy.ht.aop, data = strdiv)
 summary (lmcover2)
-#significantly related
+#significantly (-) related
 
 lmcover3 = lm(exotic_cover~ deepgap.fraction.aop, data = strdiv)
 summary (lmcover3)
@@ -103,7 +103,7 @@ summary (lmcover6)
 
 lmcover7 = lm(exotic_richness~ mean.max.canopy.ht.aop, data = strdiv)
 summary (lmcover7)
-#sig related
+#sig (-) related
 
 lmcover8 = lm(exotic_richness~ deepgap.fraction.aop, data = strdiv)
 summary (lmcover8)
@@ -111,11 +111,11 @@ summary (lmcover8)
 
 lmcover9 = lm(exotic_richness~ vert.sd.aop, data = strdiv)
 summary (lmcover9)
-#highly significant
+#highly (+) significant
 
 lmcover10 = lm(exotic_richness~ sd.sd.aop, data = strdiv)
 summary (lmcover10)
-#highly significant
+#highly (+) significant
 
 
 
@@ -123,34 +123,65 @@ summary (lmcover10)
 #plots with invasive cover
 ggplot(strdiv, aes(x=max.canopy.ht.aop, y=exotic_cover, color = new_class)) + 
   geom_point() + 
-  xlab("Maximum canopy height") + 
+  xlab("Maximum Canopy Height") + 
   ylab("Invasive plant % cover") + 
   labs(color='Forest Type') 
 
 
 ggplot(strdiv, aes(x=mean.max.canopy.ht.aop, y=exotic_cover, color = new_class)) + 
   geom_point() +
-  xlab("xlab") + 
+  xlab("Mean Canopy Height") + 
   ylab("Invasive plant % cover") + 
   labs(color='Forest Type')
 
-ggplot(strdiv, aes(x=deepgap.fraction.aop, y=exotic_cover)) + 
+ggplot(strdiv, aes(x=deepgap.fraction.aop, y=exotic_cover, color = new_class)) + 
   geom_point() + 
-  xlab("xlab") + 
+  xlab("Gap Fraction") + 
   ylab("Invasive plant % cover") + 
   labs(color='Forest Type')
 
-ggplot(strdiv, aes(x=vert.sd.aop, y=exotic_cover)) + 
+#External heterogeneity
+ggplot(strdiv, aes(x=vert.sd.aop, y=exotic_cover, color = new_class)) + 
   geom_point() +
-  xlab("xlab") + 
+  xlab("External heterogeneity") + 
   ylab("Invasive plant % cover") + 
-  labs(color='Forest Type')
+  labs(color='Forest Type') +
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
 
-ggplot(strdiv, aes(x=sd.sd.aop, y=exotic_cover)) + 
+#internal heterogeneity
+ggplot(strdiv, aes(x=sd.sd.aop, y=exotic_cover, color = new_class)) + 
   geom_point() +
-  xlab("xlab") + 
+  xlab("Internal Heterogeneity") + 
   ylab("Invasive plant % cover") + 
-  labs(color='Forest Type')
+  labs(color='Forest Type') 
+
+
+###
+#need to filter as there are some outliers (e.g., values > 5000)
+strdivfilt <- strdiv %>%
+  filter(top.rugosity.aop < 100)
+
+ggplot(strdivfilt, aes(x=top.rugosity.aop, y=exotic_cover, color = new_class)) + 
+  geom_point() +
+  xlab("Rugosity: Outer canopy roughness") + 
+  ylab("Invasive plant % cover") + 
+  labs(color='Forest Type') +
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
+###
+
+#entropy
+ggplot(strdiv, aes(x=entropy.aop, y=exotic_cover, color = new_class)) + 
+  geom_point() +
+  xlab("Entropy") + 
+  ylab("Invasive plant % cover") + 
+  labs(color='Forest Type') + 
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
 
 
 
@@ -168,9 +199,33 @@ ggplot(strdiv, aes(x=mean.max.canopy.ht.aop, y=exotic_richness)) +
 ggplot(strdiv, aes(x=deepgap.fraction.aop, y=exotic_richness)) + 
   geom_point()
 
-ggplot(strdiv, aes(x=vert.sd.aop, y=exotic_richness)) + 
-  geom_point()
+ggplot(strdiv, aes(x=vert.sd.aop, y=exotic_richness, color = new_class)) + 
+  geom_point() +
+  xlab("External heterogeneity") + 
+  ylab("Invasive plant species richness") + 
+  labs(color='Forest Type') + 
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
 
-ggplot(strdiv, aes(x=sd.sd.aop, y=exotic_richness)) + 
-  geom_point()
+ggplot(strdiv, aes(x=sd.sd.aop, y=exotic_richness, color = new_class)) + 
+  geom_point()+
+  xlab("Internal heterogeneity") + 
+  ylab("Invasive plant species richness") + 
+  labs(color='Forest Type') 
 
+
+ggplot(strdiv, aes(x=entropy.aop, y=exotic_richness, color = new_class)) + 
+  geom_point() +
+  xlab("Entropy") + 
+  ylab("Invasive plant species richness") + 
+  labs(color='Forest Type') +
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
+
+ggplot(strdivfilt, aes(x=top.rugosity.aop, y=exotic_richness, color = new_class)) + 
+  geom_point() +
+  xlab("Rugosity: Outer canopy roughness") + 
+  ylab("Invasive plant species richness") + 
+  labs(color='Forest Type')
