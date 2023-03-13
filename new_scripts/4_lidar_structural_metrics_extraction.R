@@ -270,4 +270,4 @@ pull_Col = data.frame(plot_data_table[match_Id$match.structural_diversity.new_ID
 
 structural_diversity = cbind(pull_Col,structural_diversity[,c(6:20)])
 
-write.csv(structural_diversity,"E:/NEON_Data/Structural_diversity/struct_diver_20m_plot.csv")
+write.csv(structural_diversity,"E:/NEON_Data/Structural_diversity/lidar_structural_metrics.csv")
