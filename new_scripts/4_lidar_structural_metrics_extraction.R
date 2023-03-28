@@ -101,7 +101,6 @@ for (i in 1:length(names_to_cloud)) #length(names_to_cloud
   #remove points with a classification (18) of noise 
   data.20m <- filter_poi(data.20m, Classification != LASNOISE)
   
- 
   try(
   dtm <- lidR::grid_terrain(las = data.20m,
                             res = 1, # was 0.5 and 0.25 before
@@ -139,6 +138,10 @@ for (i in 1:length(names_to_cloud)) #length(names_to_cloud
   #calculate HMAX, the maximum CHM height value
   max.canopy.ht <- max(chm@data@values, na.rm=TRUE) 
   
+  #use Forest Service definition of trees and remove plots with vegetation < 1.4 m tall
+  if(max.canopy.ht < 1.4){
+    next
+  }
   #RUMPLE
   #calculate rumple, a ratio of outer canopy surface area to 
   #ground surface area (1600 m^2)
@@ -165,6 +168,10 @@ for (i in 1:length(names_to_cloud)) #length(names_to_cloud
   #COVER FRACTION
   #cover fraction, the inverse of deep gap fraction
   cover.fraction <- 1 - deepgap.fraction 
+  
+  #remove ground points so that only include vegetation in structural diversity metrics that use point cloud directly 
+  #chm has zeros to maintain area
+  data.20m <- filter_poi(data.20m, Classification != 2L)
   
   #HEIGHT SD
   #height SD, the standard deviation of height values for all points
@@ -206,7 +213,7 @@ for (i in 1:length(names_to_cloud)) #length(names_to_cloud
   #dz = 1 partitions point cloud in 1 m horizontal slices 
   #z0 is set to a reasonable height based on the age and height of 
   #the study sites 
-  gap_frac <- gap_fraction_profile(Zs, dz = 1, z0=3) 
+  gap_frac <- gap_fraction_profile(Zs, dz = 1, z0=1.4) 
   #defines gap fraction profile as the average gap fraction in each 
   #1 m horizontal slice assessed in the previous line
   GFP.AOP <- mean(gap_frac$gf) 
@@ -216,7 +223,7 @@ for (i in 1:length(names_to_cloud)) #length(names_to_cloud
   #k = 0.5 is a standard extinction coefficient for foliage 
   #dz = 1 partitions point cloud in 1 m horizontal slices 
   #z0 is set to the same height as gap fraction profile above
-  LADen<-LAD(Zs, dz = 1, k=0.5, z0=3) 
+  LADen<-LAD(Zs, dz = 1, k=0.5, z0=1.4) 
   #vegetation area index, sum of leaf area density values for 
   #all horizontal slices assessed in previous line
   VAI.AOP <- sum(LADen$lad, na.rm=TRUE) 
@@ -256,7 +263,6 @@ colnames(structural_diversity) <-
 
 structural_diversity$new_ID = paste(structural_diversity$site,structural_diversity$year_mo,structural_diversity$easting,structural_diversity$northing)
 
-
 # reading Mukund's old data frame to merge other plot level information with the structural metrics derived from lidar data at plot level
 
 plot_data_table = read.csv("E:/NEON_Data/Structural_diversity/plot_lidar/plot_data_table.csv")
@@ -269,5 +275,5 @@ match_Id = data.frame(match(structural_diversity$new_ID,plot_data_table$new_ID))
 pull_Col = data.frame(plot_data_table[match_Id$match.structural_diversity.new_ID..plot_data_table.new_ID.,c(1:8)]) 
 
 structural_diversity = cbind(pull_Col,structural_diversity[,c(6:20)])
-
+write.csv(structural_diversity, "./StructuralDiversity_Liz03152023.csv")
 write.csv(structural_diversity,"E:/NEON_Data/Structural_diversity/lidar_structural_metrics.csv")
