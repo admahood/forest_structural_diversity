@@ -23,7 +23,7 @@ strdiv$max.canopy.ht.aop <- ifelse(strdiv$max.canopy.ht.aop > 200, NA, strdiv$ma
 strdiv$mean.max.canopy.ht.aop <- ifelse(strdiv$mean.max.canopy.ht.aop > 200, NA, strdiv$mean.max.canopy.ht.aop)
 
 
-#reclass NLCD
+#reclass NLCD with broad forest categories (e.g.,deciduous,evergreen, mixed)
 strdiv <- strdiv %>%
   mutate(new_class = ifelse(Dominant_NLCD_Classes == "Evergreen Forest, Grassland/Herbaceous, Shrub/Scrub" | Dominant_NLCD_Classes == "Evergreen Forest, Shrub/Scrub, Woody Wetlands" | Dominant_NLCD_Classes == "Evergreen Forest, Woody Wetlands" | Dominant_NLCD_Classes == "Dwarf Scrub, Evergreen Forest, Shrub/Scrub" | Dominant_NLCD_Classes == "Evergreen Forest, Shrub/Scrub" | Dominant_NLCD_Classes == "Evergreen Forest, Grassland/Herbaceous" | Dominant_NLCD_Classes == "Emergent Herbaceous Wetlands, Evergreen Forest, Woody Wetlands" | Dominant_NLCD_Classes == "Evergreen Forest", 'evergreen',
                     ifelse(Dominant_NLCD_Classes == "Deciduous Forest, Pasture/Hay" | Dominant_NLCD_Classes == "Deciduous Forest, Grassland/Herbaceous"  | Dominant_NLCD_Classes == "Deciduous Forest, Woody Wetlands" | Dominant_NLCD_Classes == "Deciduous Forest" |  Dominant_NLCD_Classes == "Cultivated Crops, Deciduous Forest" , 'deciduous', 'mixed forest')))
@@ -74,7 +74,7 @@ write.table(summary(final_mods$cover1))
 
 ####################################
 
-#regression with exotic cover (response) as a function of structural diversity (predictors)
+#linear regression with exotic cover (response) as a function of structural diversity (predictors)
 lmcover1 = lm(exotic_cover~ max.canopy.ht.aop, data = strdiv)
 summary (lmcover1)
 #significantly (-) related
