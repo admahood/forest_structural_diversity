@@ -1,3 +1,34 @@
+#######this file plots the data to look for relationships with structural diversity metrics
+
+#load libraries
+x <- c("ggplot2", "stargazer","ggpubr")
+lapply(x, library, character.only = TRUE, verbose = FALSE)
+theme_set(theme_classic())
+
+#load data
+strdiv <- as.data.frame(read_csv("new_scripts/output/structural_metrics_by_plot.csv"))
+
+head(strdiv)
+
+unique(strdiv$Dominant_NLCD_Classes)
+
+#replace NAs in exotic_cover and exotic_SR with 0s
+#note, this was done in script 6, if running consecutively
+strdiv$exotic_cover[is.na(strdiv$exotic_cover)] <- 0
+strdiv$exotic_richness[is.na(strdiv$exotic_richness)] <- 0
+
+
+#remove outliers
+#note, this was done in script 6, if running consecutively
+strdiv$max.canopy.ht.aop <- ifelse(strdiv$max.canopy.ht.aop > 200, NA, strdiv$max.canopy.ht.aop) 
+strdiv$mean.max.canopy.ht.aop <- ifelse(strdiv$mean.max.canopy.ht.aop > 200, NA, strdiv$mean.max.canopy.ht.aop)
+
+
+#reclass NLCD with broad forest categories (e.g.,deciduous,evergreen, mixed)
+#note, this was done in script 6, if running consecutively
+strdiv <- strdiv %>%
+  mutate(new_class = ifelse(Dominant_NLCD_Classes == "Evergreen Forest, Grassland/Herbaceous, Shrub/Scrub" | Dominant_NLCD_Classes == "Evergreen Forest, Shrub/Scrub, Woody Wetlands" | Dominant_NLCD_Classes == "Evergreen Forest, Woody Wetlands" | Dominant_NLCD_Classes == "Dwarf Scrub, Evergreen Forest, Shrub/Scrub" | Dominant_NLCD_Classes == "Evergreen Forest, Shrub/Scrub" | Dominant_NLCD_Classes == "Evergreen Forest, Grassland/Herbaceous" | Dominant_NLCD_Classes == "Emergent Herbaceous Wetlands, Evergreen Forest, Woody Wetlands" | Dominant_NLCD_Classes == "Evergreen Forest", 'evergreen',
+                    ifelse(Dominant_NLCD_Classes == "Deciduous Forest, Pasture/Hay" | Dominant_NLCD_Classes == "Deciduous Forest, Grassland/Herbaceous"  | Dominant_NLCD_Classes == "Deciduous Forest, Woody Wetlands" | Dominant_NLCD_Classes == "Deciduous Forest" |  Dominant_NLCD_Classes == "Cultivated Crops, Deciduous Forest" , 'deciduous', 'mixed forest')))
 
 
 
