@@ -96,7 +96,7 @@ summary (lmcover5)
 #not sig related
 
 
-#regression with exotic SR (response)
+#linear regression with exotic SR (response) as a function of structural diversity (predictors)
 lmcover6 = lm(exotic_richness~ max.canopy.ht.aop, data = strdiv)
 summary (lmcover6)
 #not sig related
