@@ -1,8 +1,8 @@
 # alternate download of cover data
 
 # neondiveRsity ================
-# devtools::install_github("admahood/neondiveRsity")
-library(neondiveRsity)
+# devtools::install_github("admahood/neonPlantEcology")
+library(neonPlantEcology)
 
 
 root <- paste0(getwd(), "/")
@@ -13,7 +13,7 @@ data <- read.csv(paste0(root, "data/NEON_sites_dates_for_cover.csv"))
 
 if(!file.exits(outfile)){
   # takes a while
-  input_data <- lapply(data$siteID,neondiveRsity::download_plant_div)
+  input_data <- lapply(data$siteID,neonPlantEcology::download_plant_div)
 }else{
   load(outfile)
 }
