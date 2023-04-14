@@ -59,7 +59,7 @@ site_plot_filtered <- bind_rows(res) %>%
   dplyr::select(-subplotID, -scale)
 
 spl_out <- site_plot_filtered  %>%
-  left_join(lidar_data, by = "year_plot")
+  left_join(lidar_data, by = c("year_plot", "plotID"))
 
 write_csv(spl_out,"output/plants_lidar_locations.csv")
 # veg_types <- read_csv('data/field-sites.csv')
