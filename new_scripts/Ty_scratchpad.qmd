@@ -1,0 +1,81 @@
+---
+title: "Ty_scratchpad"
+format:
+  html:
+    theme: default
+    toc: true
+    number-sections: true
+---
+
+
+
+```{r}
+library(here)
+```
+
+
+```{r}
+h <- here("results", "rugosity.png")
+```
+
+
+
+## Rugosity 
+**Rugosity**: Outer canopy roughness as measured from lidar. % Invasive species measured by NEON via quadrat. 
+
+![Outer canopy roughness vs. % invasive plant cover](/Users/ty/Documents/Github/forest_structural_diversity/results/rugosity.png)
+
+H0: Higher invasive plant cover percentages should lead to increased rugosity in the outer canopy.
+
+H1: This is because invasive plants often have different growth patterns and structures compared to native plants, which can alter the overall structure and composition of the vegetation in an ecosystem. For example, invasive plants may grow taller or have denser foliage, creating a more complex canopy that is rougher at the outer layer.
+
+Increased rugosity can have several effects on the ecosystem. It can alter the microclimate by changing the amount and distribution of sunlight and shade, affecting the growth of other plants and the availability of resources for other organisms. It can also affect the movement of air and water, potentially changing patterns of erosion, sedimentation, and nutrient cycling.
+
+H2: It is also possible that increased rugosity could create microhabitats that are beneficial for certain species, such as providing shelter or food for certain animals or plants.
+
+H3: Dominance of a single invasive species. In cases where a single invasive species dominates, it may have a more uniform canopy structure compared to the diverse native plant community it has replaced. This could lead to decreased rugosity in the outer canopy despite the higher invasive plant cover.
+
+H4: Type of invasive species. Not all invasive species have the same effect on canopy structure. Some may have more complex and irregular canopy structures, while others may have simpler and more regular structures. In cases where the invasive species has a simpler and more regular structure, the relationship between invasive plant cover and rugosity may be less clear.
+
+H5: Ecosystem type. The relationship between invasive plant cover and rugosity may vary depending on the type of ecosystem being considered. For example, in open grassland or savanna ecosystems, invasive plant cover may lead to increased rugosity by creating a more complex and varied vegetation structure, whereas in dense forest ecosystems, invasive plant cover may lead to a more uniform structure and decreased rugosity.
+
+## Internal heterogeneity
+**Internal heterogeneity**: diversity of species, habitats, or ecological processes within an ecosystem. For example, a forest ecosystem may have high internal heterogeneity if it contains a mix of different types of trees, shrubs, and other plants, as well as a range of microhabitats such as wetlands, streams, and rocky outcrops. This internal heterogeneity can create a complex and diverse ecological community, with different species occupying different niches and interacting in various ways.
+
+![internal heterogeneity vs % cover of invasive species](/Users/ty/Documents/Github/forest_structural_diversity/results/internalhet.png)
+
+H0: Invasive plant cover is likely to have a negative effect on internal heterogeneity, meaning that as invasive plant cover increases, internal heterogeneity decreases.
+
+H1: This is because invasive plants often outcompete native species and can form monocultures, reducing the diversity of plant species within an ecosystem. This can also impact other components of the ecosystem, such as reducing the diversity of habitats or the range of ecological processes that occur. As a result, invasive plant cover can homogenize the vegetation structure and reduce the internal heterogeneity of an ecosystem.
+
+In the context of comparing three different forest types, it is possible that different forest types may have different levels of susceptibility to invasive species, depending on factors such as climate, soil type, and disturbance history. For example, a forest with a history of frequent wildfires may have adapted to tolerate or even benefit from some invasive species, whereas a forest that has not experienced such disturbances may be more vulnerable.
+
+Furthermore, different forest types may have different levels of internal heterogeneity to begin with, based on factors such as the richness of the local species pool, the physical structure of the forest, or the history of human land use. For example, a temperate deciduous forest may have a higher internal heterogeneity than a coniferous forest due to differences in tree species diversity and structural complexity.
+
+H2: Synergistic effects. In some cases, the interaction between invasive plants and native species may lead to the creation of new habitats or microhabitats that increase internal heterogeneity. For example, the invasive plant may provide shade that allows a previously unestablished native species to grow, creating a new layer of vegetation and increasing heterogeneity. While this scenario may be less common, it is possible that the presence of invasive species could lead to a net increase in internal heterogeneity in some cases.
+
+H3: Diversity of invasives. Not all invasive species have the same effect on ecosystem structure and function. Some may be more aggressive and outcompete native species, leading to a decrease in internal heterogeneity, while others may have a more moderate effect. In cases where the invasive species are less aggressive, or where multiple invasive species are present and have different effects, the relationship between invasive plant cover and internal heterogeneity may be less clear.
+
+H4: Spatial scale. The relationship between invasive plant cover and internal heterogeneity may vary depending on the spatial scale of analysis. For example, at a small scale, the presence of invasive species may create microhabitats and increase local heterogeneity, while at a larger scale, the invasion may lead to a more uniform structure and decrease heterogeneity.
+
+
+## Entropy
+**Entropy** is a measure of the amount of disorder or randomness in a system. It is often used as a measure of diversity or complexity, with **higher entropy indicating a greater degree of diversity or complexity**.
+
+In ecology, entropy is often used to quantify the diversity of species or habitats within an ecosystem. For example, the Shannon entropy index is a commonly used measure of biodiversity that takes into account both the number of species present and their relative abundance. High entropy values indicate a more diverse and complex ecosystem with a greater variety of species.
+
+In the context of forest structure measurements, entropy can be used to measure the complexity of the physical structure of the forest, such as the complexity of the canopy or the arrangement of trees. For example, the entropy of the forest canopy can be measured using lidar data to assess the degree of vertical and horizontal variation in canopy height and structure. High entropy values in this context indicate a more complex and diverse forest structure with greater variation in canopy height and structure.
+
+*If entropy is measuring the same thing as Rugosity, then the pattern could be reverse according the the rugosity hypotheses above. In the case that we are confounding entropy and rugosity, higher entropy would indicate greater % invasive cover.*
+
+![entropy vs % cover of invasive species](/Users/ty/Documents/Github/forest_structural_diversity/results/entropy.png)
+
+H1: If the three different forest types have similar levels of diversity to begin with, then it is possible that increasing invasive plant cover would decrease entropy by reducing the number of unique species or habitats in the ecosystem. Invasive plants can often form monocultures and outcompete native species, leading to a reduction in the overall number of species and habitats present in the ecosystem. This reduction in diversity could result in **lower entropy values**.
+
+H2: Alternatively, if one of the three forest types has a higher level of diversity than the others, then it is possible that increasing invasive plant cover in that forest type may not have a large effect on entropy. This is because the higher initial level of diversity could buffer against the effects of invasive species, allowing the ecosystem to **maintain a relatively high level of entropy even with the presence of invasive plants**.
+
+H3: Another possible relationship is that increasing invasive plant cover could initially increase entropy by introducing novel and diverse elements to the ecosystem. Invasive species often have different growth patterns and structures compared to native species, and their introduction can alter the overall structure and composition of the vegetation in an ecosystem. This can lead to an **increase in entropy by introducing new and diverse elements to the ecosystem**. 
+
+H4: However, as the invasive species become dominant and homogenize the ecosystem, **entropy could eventually decrease**.
+
+
