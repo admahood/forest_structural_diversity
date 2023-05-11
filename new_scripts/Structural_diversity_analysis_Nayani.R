@@ -24,12 +24,37 @@ library(psych)
 wd = "E:/forest_structural_diversity/output/"
 setwd(wd)
 
-sp_tr = read.csv("plants_lidar_locations.csv")
+sp_tr = read.csv("E:/NEON_Data/Structural_diversity/StructuralDiversity_Liz03152023.csv")
+
+plot_div = read.csv("E:/forest_structural_diversity/data/plot_site_summaries.csv")
+plot_div$ID2 = paste0(plot_div$year,plot_div$plotID)
+
+slect_plots = read.csv("E:/forest_structural_diversity/output/cover_by_plot.csv")
+slect_plots$ID2 = paste0(slect_plots$year,slect_plots$plotID)
+
+match_id1 = match(slect_plots$ID2,plot_div$ID2)
+
+slect_plots = cbind(slect_plots,plot_div[match_id1,])
+
+
+
+slect_plots$new_ID = paste0(slect_plots$siteID,slect_plots$monthyear,slect_plots$easting,slect_plots$northing)
+sp_tr$new_ID = paste0(sp_tr$site,sp_tr$year_mo, sp_tr$easting,sp_tr$northing)
+
+match_id2 = match(sp_tr$new_ID,slect_plots$new_ID)
+
+
+
+sp_tr = cbind(sp_tr,slect_plots[match_id2,])
+write.csv(sp_tr, "insitu_and_lidar_all_in_one_final.csv")
+
+sp_tr = sp_tr[,c(1:21,31:36,42:71)]
+
 
 sp_tr = sp_tr[,-c(49)] # removed Lidar based VCI column as it has a lots of 'NA's
 sp_tr = na.omit(sp_tr)
 
-sp_tr2 = sp_tr[,c(30,37:48)] # extract only the lidar based diversity and  data and invasion status
+sp_tr2 = sp_tr[,c(21,37:48)] # extract only the lidar based diversity and  data and invasion status
 
 # tr_cat = read.csv("test_tr_cat.csv")
 
@@ -154,9 +179,9 @@ legend(x="bottomright",  cex=0.8,legend=levels(as.factor(lidar_cover$NLCD_Classe
 
 dev.new(width = 3, height = 3)
 if(require(rpart)){
-  model <- rpart(sp_tr$invaded ~ mean.max.canopy.ht.aop + max.canopy.ht.aop + rumple.aop+
+  model <- rpart(lidar_cover$invaded ~ max.canopy.ht.aop + rumple.aop+
                    deepgaps.aop+deepgap.fraction.aop+cover.fraction.aop+ top.rugosity.aop + 
-                   vert.sd.aop + sd.sd.aop + entropy.aop + GFP.AOP.aop + VAI.AOP.aop, 
+                   vert.sd.aop + sd.sd.aop + entropy.aop + GFP.AOP.aop, 
                  method = "class", data = sp_tr2)
   ddata <- dendro_data(model)
   ggplot() + 
@@ -215,3 +240,86 @@ cor_all = cor(X2,method = "spearman")
 cor_greater_20 = as.data.frame(apply(cor_all, 2, function(x) ifelse (abs(x) >=0.30,x,"NA")))
 
 plot(cor_greater_20)
+
+
+
+
+
+
+
+
+
+
+##########################
+
+# Give the chart file a name.
+png(file = "max_canopy_height.png")
+
+# Plot the chart.
+b = boxplot(max.canopy.ht.aop ~ NLCD_Classes_Abb, data = sp_tr, xlab = "NLCD class",
+        ylab = "Max canopy height (m)", main = "Lidar Max Height ", notch = FALSE, 
+        varwidth = TRUE, 
+        col = as.factor(sp_tr$NLCD_Classes_Abb)) 
+
+# Save the file.
+dev.off()
+
+
+
+dev.new(width=2, height=1)
+lab_text = element_text(face = "bold", color = "black", size = 16)
+lab_text_x = element_text(face = "bold", color = "black", size = 16,angle=45)
+axis_text = element_text(face = "bold", color = "black", size = 16)
+ggplot() + 
+  geom_smooth(data = sp_tr, aes(x=cover_native, y=easting),method = "lm",
+              formula = y ~ poly(x, 2), se = TRUE ,  linetype="dashed",
+              color="red") +
+  geom_smooth(data = sp_tr, aes(x=cover_exotic, y=easting),method = "lm",
+              formula = y ~ poly(x, 2), se = TRUE ,  linetype="dashed",
+              color="green") +
+  # geom_smooth(data = newdata, aes(x=chrono, y=fit2),method = "lm",
+  #             formula = y ~ poly(x, 2), se = TRUE ,  linetype="dashed",
+  #             color="pink") +
+  # geom_hline(yintercept=0, linetype="dashed", 
+  #            color = "red", size=2)+
+  theme(legend.position='right') +
+  labs(y = " easting ", x = "cover_native" ,title = "easting with relative cover native" )+
+  theme(axis.line.x = element_line(size = 0.7, colour = "black"),
+        axis.line.y = element_line(size = 0.7, colour = "black"),
+        axis.line = element_line(size=1, colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        axis.text.x = lab_text_x, axis.text.y = lab_text, axis.title = axis_text,
+        plot.title = element_text(hjust = 0.1))
+
+
+dev.new(width=2, height=1)
+lab_text = element_text(face = "bold", color = "black", size = 16)
+lab_text_x = element_text(face = "bold", color = "black", size = 16,angle=45)
+axis_text = element_text(face = "bold", color = "black", size = 16)
+ggplot() + 
+  geom_smooth(data = sp_tr, aes(x=cover_native, y=deepgap.fraction.aop),method = "lm",
+              formula = y ~ poly(x, 2), se = TRUE ,  linetype="dashed",
+              color="red") +
+  geom_smooth(data = sp_tr, aes(x=cover_exotic, y=deepgap.fraction.aop),method = "lm",
+              formula = y ~ poly(x, 2), se = TRUE ,  linetype="dashed",
+              color="green") +
+  # geom_smooth(data = newdata, aes(x=chrono, y=fit2),method = "lm",
+  #             formula = y ~ poly(x, 2), se = TRUE ,  linetype="dashed",
+  #             color="pink") +
+  # geom_hline(yintercept=0, linetype="dashed", 
+  #            color = "red", size=2)+
+  theme(legend.position='right') +
+  labs(y = "deepgap.fraction.aop", x = "Percent cover" ,title = "Lidar deepgap.fraction.aop with percent veg. cover" )+
+  theme(axis.line.x = element_line(size = 0.7, colour = "black"),
+        axis.line.y = element_line(size = 0.7, colour = "black"),
+        axis.line = element_line(size=1, colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        axis.text.x = lab_text_x, axis.text.y = lab_text, axis.title = axis_text,
+        plot.title = element_text(hjust = 0.1))
+
