@@ -21,7 +21,7 @@ library(ggdendro)
 library(FD)
 library(psych)
 
-wd = "E:/forest_structural_diversity/output/"
+wd = "E:/NEON_Data/Structural_diversity/"
 setwd(wd)
 
 sp_tr = read.csv("E:/NEON_Data/Structural_diversity/StructuralDiversity_Liz03152023.csv")
@@ -38,15 +38,19 @@ slect_plots = cbind(slect_plots,plot_div[match_id1,])
 
 
 
-slect_plots$new_ID = paste0(slect_plots$siteID,slect_plots$monthyear,slect_plots$easting,slect_plots$northing)
-sp_tr$new_ID = paste0(sp_tr$site,sp_tr$year_mo, sp_tr$easting,sp_tr$northing)
-
-match_id2 = match(sp_tr$new_ID,slect_plots$new_ID)
+slect_plots$new_ID = paste0(slect_plots$siteID," ",slect_plots$monthyear," ",slect_plots$easting," ",slect_plots$northing)
+slect_plots$new_ID<-gsub(" ","",as.character(slect_plots$new_ID)) # remove spaces between new_ID attributes
 
 
+# sp_tr$new_ID = paste0(sp_tr$site,sp_tr$year_mo, sp_tr$easting,sp_tr$northing)
+# 
+# match_id2 = match(slect_plots$new_ID,sp_tr$new_ID)
+# match_id3 = match(sp_tr$new_ID,slect_plots$new_ID)
+# 
+# 
+# slect_plots = cbind(slect_plots,sp_tr[match_id2,])
 
-sp_tr = cbind(sp_tr,slect_plots[match_id2,])
-write.csv(sp_tr, "insitu_and_lidar_all_in_one_final.csv")
+#write.csv(slect_plots, "slect_plots.csv")
 
 sp_tr = sp_tr[,c(1:21,31:36,42:71)]
 
@@ -147,19 +151,37 @@ print(g)
 
 ##Adding landcover class per each plot
 
-plot_cover = read.csv("E:/forest_structural_diversity/output/cover_by_plot.csv")
+landcover = data.frame()
 
-plot_cover$new_ID = paste0(plot_cover$siteID,plot_cover$year,plot_cover$easting,plot_cover$northing)
+file_list = dir("E:/NEON_Data/Structural_diversity/drive-download-20230531T160737Z-001/", pattern = "NEON_plots*", full.names = FALSE, ignore.case = TRUE)
+#names_to_cloud = substr(file_list, 1, nchar(file_list)-8)
+for (i in 1:length(file_list))
+{
+  print(i)
+  lcd = read.csv(paste0("E:/NEON_Data/Structural_diversity/drive-download-20230531T160737Z-001/",file_list[i]))
+  landcover = rbind(landcover,lcd[,c(2:9)])
+}
+
+
+
+
+#plot_cover = read.csv("E:/forest_structural_diversity/output/cover_by_plot.csv")
+
+landcover$new_ID = paste0(landcover$site,landcover$year_mo,landcover$easting,landcover$northing)
 
 sp_tr$newID = paste0(sp_tr$site,sp_tr$year,sp_tr$easting,sp_tr$northing)
 
-match_id = match(sp_tr$newID,plot_cover$new_ID)
+match_id = match(landcover$new_ID,sp_tr$newID)
 
-cover_to_sp_tr = plot_cover[match_id,]
+cover_to_sp_tr = landcover[match_id,]
 
-lidar_cover = cbind(sp_tr,cover_to_sp_tr)
+landcover = cbind(landcover,sp_tr[match_id,])
+
+#lidar_cover = cbind(sp_tr,cover_to_sp_tr)
 # lidar_cover = na.omit((lidar_cover))
 
+match_id2 = match(landcover$new_ID,slect_plots$new_ID)
+landcover = cbind(landcover,slect_plots[match_id2,])
 
 
 dev.new(width = 3, height = 3)
