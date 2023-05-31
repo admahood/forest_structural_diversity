@@ -21,10 +21,38 @@ library(ggdendro)
 library(FD)
 library(psych)
 
-wd = "E:/NEON_Data/Structural_diversity/"
+wd = "E:/Structural_diversity/"
 setwd(wd)
 
-sp_tr = read.csv("E:/NEON_Data/Structural_diversity/StructuralDiversity_Liz03152023.csv")
+
+
+sp_tr = read.csv("E:/forest_structural_diversity/output/insitu_and_lidar_all_in_one_final_5_31_2023.csv")
+
+# [1] "easting"                "northing"               "NLCD_code_plot"         "NLCD_plot_des"          "plotID"                
+# [6] "site"                   "year"                   "year_mo"                "mean.max.canopy.ht.aop" "max.canopy.ht.aop"     
+# [11] "rumple.aop"             "deepgap.fraction.aop"   "cover.fraction.aop"     "top.rugosity.aop"       "vert.sd.aop"           
+# [16] "vertCV.aop"             "sd.sd.aop"              "entropy.aop"            "GFP.AOP.aop"            "VAI.AOP.aop"           
+# [21] "VCI.AOP.aop"            "q25.aop"                "q50.aop"                "latitude"               "longitude"             
+# [26] "NLCD_plot"              "NLCD_plot_Abb"          "shannon_exotic"         "evenness_exotic"        "nspp_exotic"           
+# [31] "shannon_notexotic"      "evenness_notexotic"     "nspp_notexotic"         "shannon_native"         "evenness_native"       
+# [36] "nspp_native"            "shannon_unknown"        "evenness_unknown"       "nspp_unknown"           "rel_cover_native"      
+# [41] "rel_cover_unknown"      "rel_cover_exotic"       "cover_native"           "cover_unknown"          "cover_exotic"          
+# [46] "rel_cover_notexotic"    "cover_notexotic"        "shannon_total"          "evenness_total"         "nspp_total"            
+# [51] "shannon_family"         "evenness_family"        "nfamilies"              "scale"                  "invaded"               
+# [56] "turnover"               "nestedness"             "plotType"               "subtype"                "minElev"               
+# [61] "maxElev"                "slope"                  "aspect"                 "soilOrder"         
+
+sp_tr_numeric <- sp_tr[,c(1,2,7,9:23,28:53,56,57,60:63)]
+sp_tr_numeric <- na.omit(sp_tr_numeric)
+cor_all = cor(sp_tr_numeric,method = "spearman")
+cor_data = data.frame(cor_all)
+
+write.csv(cor_all, "correlation_across_variables.csv")
+
+cor_greater_20 = as.data.frame(apply(cor_all, 2, function(x) ifelse (abs(x) >=0.50,x,"NA")))
+
+plot(cor_greater_20)
+
 
 plot_div = read.csv("E:/forest_structural_diversity/data/plot_site_summaries.csv")
 plot_div$ID2 = paste0(plot_div$year,plot_div$plotID)
@@ -42,29 +70,6 @@ slect_plots$new_ID = paste0(slect_plots$siteID," ",slect_plots$monthyear," ",sle
 slect_plots$new_ID<-gsub(" ","",as.character(slect_plots$new_ID)) # remove spaces between new_ID attributes
 
 
-# sp_tr$new_ID = paste0(sp_tr$site,sp_tr$year_mo, sp_tr$easting,sp_tr$northing)
-# 
-# match_id2 = match(slect_plots$new_ID,sp_tr$new_ID)
-# match_id3 = match(sp_tr$new_ID,slect_plots$new_ID)
-# 
-# 
-# slect_plots = cbind(slect_plots,sp_tr[match_id2,])
-
-#write.csv(slect_plots, "slect_plots.csv")
-
-sp_tr = sp_tr[,c(1:21,31:36,42:71)]
-
-
-sp_tr = sp_tr[,-c(49)] # removed Lidar based VCI column as it has a lots of 'NA's
-sp_tr = na.omit(sp_tr)
-
-sp_tr2 = sp_tr[,c(21,37:48)] # extract only the lidar based diversity and  data and invasion status
-
-# tr_cat = read.csv("test_tr_cat.csv")
-
-#Normalized the data before PCA analysis
-
-
 #normalization function
 
 normalized<-function(y) {
@@ -79,7 +84,9 @@ normalized<-function(y) {
 }
 
 #Normalize lidar metrics
-sp_tr2 = data.frame(apply(sp_tr2[,c(2:13)],2,normalized))
+sp_tr3 = data.frame(apply(sp_tr_numeric,2,normalized))
+
+
 sp_tr2 = cbind(sp_tr$invaded,sp_tr2)
 sp_tr2 = sp_tr2[-823,] # gave a strange value in PCA. So removed for now.
 
@@ -184,6 +191,16 @@ match_id2 = match(landcover$new_ID,slect_plots$new_ID)
 landcover = cbind(landcover,slect_plots[match_id2,])
 
 
+slope_ele = read.csv("E:/forest_structural_diversity/data/All_NEON_TOS_Plot_Centroids_V8.csv")
+slope_ele$new_ID = paste0(slope_ele$siteID,slope_ele$plotID,slope_ele$easting,slope_ele$northing)
+landcover$new_ID2 = paste0(landcover$site,landcover$plotID,landcover$easting,landcover$northing)
+
+match_id3 = match(landcover$new_ID2,slope_ele$new_ID)
+
+landcover = cbind(landcover,slope_ele[match_id3,])
+
+write.csv(landcover, "all_data_05_31_2023.csv")
+
 dev.new(width = 3, height = 3)
 sitetype <- as.numeric (as.factor (lidar_cover$NLCD_Classes_Abb[-823]))
 ordiplot (PCA_lidar$x, display = 'sites', type = 'n', main = "PCA of plot scale cover diversity by NLCD class")
@@ -257,11 +274,7 @@ if(require(rpart)){
 
 
 X2  =sp_tr[-823, -c(1:3,30,33,34,49)]
-cor_all = cor(X2,method = "spearman")
 
-cor_greater_20 = as.data.frame(apply(cor_all, 2, function(x) ifelse (abs(x) >=0.30,x,"NA")))
-
-plot(cor_greater_20)
 
 
 
