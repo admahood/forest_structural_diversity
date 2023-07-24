@@ -1,0 +1,13 @@
+---
+title: "distribution plots"
+format:
+  html:
+    theme: default
+    toc: true
+    number-sections: true
+---
+
+```{r}
+
+```
+

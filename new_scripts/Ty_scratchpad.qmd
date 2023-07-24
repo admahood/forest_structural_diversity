@@ -39,6 +39,8 @@ H4: Type of invasive species. Not all invasive species have the same effect on c
 
 H5: Ecosystem type. The relationship between invasive plant cover and rugosity may vary depending on the type of ecosystem being considered. For example, in open grassland or savanna ecosystems, invasive plant cover may lead to increased rugosity by creating a more complex and varied vegetation structure, whereas in dense forest ecosystems, invasive plant cover may lead to a more uniform structure and decreased rugosity.
 
+H6: recruitment and competion
+
 ## Internal heterogeneity
 **Internal heterogeneity**: diversity of species, habitats, or ecological processes within an ecosystem. For example, a forest ecosystem may have high internal heterogeneity if it contains a mix of different types of trees, shrubs, and other plants, as well as a range of microhabitats such as wetlands, streams, and rocky outcrops. This internal heterogeneity can create a complex and diverse ecological community, with different species occupying different niches and interacting in various ways.
 
