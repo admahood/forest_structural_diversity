@@ -1,0 +1,51 @@
+---
+title: "quality_control"
+format:
+  html:
+    theme: default
+    toc: true
+    number-sections: true
+---
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+library(ggforce)
+```
+
+
+
+```{r}
+main_data <- read.csv("/Users/ty/Documents/Github/forest_structural_diversity/data_quality_control/forest_div_quality_control_v1.csv")
+```
+
+
+```{r}
+n <- names(main_data)
+```
+
+```{r}
+main_data |>
+  #dplyr::select("nfamilies") |>
+  ggplot() + 
+  #geom_histogram() +
+  geom_density(aes(x=.panel_x, col="red")) +
+  theme_tufte() +
+  facet_matrix(vars(n))
+```
+
+
+```{r}
+ ggsave("qc_density_plots.pdf",
+  width = 22,
+  height = 40,
+  units = "in",
+  dpi = 600,
+  limitsize = FALSE,
+  bg = NULL
+)
+```
+
+
+
