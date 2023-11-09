@@ -20,39 +20,135 @@ library(vegan)
 library(ggdendro)
 library(FD)
 library(psych)
+library(dplyr)
+library(fundiversity)
+library(cxhull)
+library(scales)
 
-wd = "E:/Structural_diversity/"
+wd = "E:/NEON_Data/Structural_diversity/"
 setwd(wd)
 
 
 
-sp_tr = read.csv("E:/forest_structural_diversity/output/insitu_and_lidar_all_in_one_final_5_31_2023.csv")
+sp_tr = read.csv("E:/NEON_Data/Structural_diversity/forest_div_quality_control_v1.csv")
 
-# [1] "easting"                "northing"               "NLCD_code_plot"         "NLCD_plot_des"          "plotID"                
-# [6] "site"                   "year"                   "year_mo"                "mean.max.canopy.ht.aop" "max.canopy.ht.aop"     
-# [11] "rumple.aop"             "deepgap.fraction.aop"   "cover.fraction.aop"     "top.rugosity.aop"       "vert.sd.aop"           
-# [16] "vertCV.aop"             "sd.sd.aop"              "entropy.aop"            "GFP.AOP.aop"            "VAI.AOP.aop"           
-# [21] "VCI.AOP.aop"            "q25.aop"                "q50.aop"                "latitude"               "longitude"             
-# [26] "NLCD_plot"              "NLCD_plot_Abb"          "shannon_exotic"         "evenness_exotic"        "nspp_exotic"           
-# [31] "shannon_notexotic"      "evenness_notexotic"     "nspp_notexotic"         "shannon_native"         "evenness_native"       
-# [36] "nspp_native"            "shannon_unknown"        "evenness_unknown"       "nspp_unknown"           "rel_cover_native"      
-# [41] "rel_cover_unknown"      "rel_cover_exotic"       "cover_native"           "cover_unknown"          "cover_exotic"          
-# [46] "rel_cover_notexotic"    "cover_notexotic"        "shannon_total"          "evenness_total"         "nspp_total"            
-# [51] "shannon_family"         "evenness_family"        "nfamilies"              "scale"                  "invaded"               
-# [56] "turnover"               "nestedness"             "plotType"               "subtype"                "minElev"               
-# [61] "maxElev"                "slope"                  "aspect"                 "soilOrder"         
+new_ID = data.frame(paste0(sp_tr$site,sp_tr$plotID,sp_tr$year_mo))
 
-sp_tr_numeric <- sp_tr[,c(1,2,7,9:23,28:53,56,57,60:63)]
+sp_tr = cbind(sp_tr,new_ID)
+
+xx = unique(new_ID)
+
+data = sp_tr[!duplicated(sp_tr$paste0.sp_tr.site..sp_tr.plotID..sp_tr.year_mo.), ] # remove duplicated items from the data frame
+
+
+write.csv(xx, "unique_site_date_comb.csv")
+
+
+# [1] "easting.x"              "northing.x"             "NLCD_code_plot"         "NLCD_plot_des"         
+# [5] "plotID"                 "site"                   "year"                   "year_mo"               
+# [9] "mean.max.canopy.ht.aop" "max.canopy.ht.aop"      "rumple.aop"             "deepgap.fraction.aop"  
+# [13] "cover.fraction.aop"     "top.rugosity.aop"       "vert.sd.aop"            "vertCV.aop"            
+# [17] "sd.sd.aop"              "entropy.aop"            "GFP.AOP.aop"            "VAI.AOP.aop"           
+# [21] "VCI.AOP.aop"            "q25.aop"                "q50.aop"                "latitude.x"            
+# [25] "longitude.x"            "NLCD_plot"              "NLCD_plot_Abb"          "shannon_exotic"        
+# [29] "evenness_exotic"        "nspp_exotic"            "shannon_notexotic"      "evenness_notexotic"    
+# [33] "nspp_notexotic"         "shannon_native"         "evenness_native"        "nspp_native"           
+# [37] "shannon_unknown"        "evenness_unknown"       "nspp_unknown"           "rel_cover_native"      
+# [41] "rel_cover_unknown"      "rel_cover_exotic"       "cover_native"           "cover_unknown"         
+# [45] "cover_exotic"           "rel_cover_notexotic"    "cover_notexotic"        "shannon_total"         
+# [49] "evenness_total"         "nspp_total"             "shannon_family"         "evenness_family"       
+# [53] "nfamilies"              "scale"                  "invaded"                "turnover"              
+# [57] "nestedness"             "plotType"               "subtype"                "minElev"               
+# [61] "maxElev"                "slope"                  "aspect"                 "soilOrder"             
+# [65] "siteID"                 "monthyear"              "sitemonthyear"          "latitude.y"            
+# [69] "longitude.y"            "easting.y"              "northing.y"             "X_TSC_2015median"      
+# [73] "X_TSC_2016median"       "X_TSC_2017median"       "X_TSC_2018median"       "X_TSC_2018median.1"    
+# [77] "X_TSC_2019median"       "X_TSC_2020median"      "NLCD_plot_des_main"           
+
+
+sp_tr_numeric <- data %>% select(where(is.numeric))
+
 sp_tr_numeric <- na.omit(sp_tr_numeric)
+
 cor_all = cor(sp_tr_numeric,method = "spearman")
 cor_data = data.frame(cor_all)
 
-write.csv(cor_all, "correlation_across_variables.csv")
+write.csv(cor_all, "correlation_across_variables_quality_v1.csv")
 
 cor_greater_20 = as.data.frame(apply(cor_all, 2, function(x) ifelse (abs(x) >=0.50,x,"NA")))
 
 plot(cor_greater_20)
 
+lidar_only = data[,c(9:23)]
+
+cor_lidar = cor(lidar_only)
+
+lidar_filtered = lidar_only[,-c(2,6,9,12,13)] #removed highly corlinear variables
+
+### get normalized data. The data range between 0 and 1.
+i=1
+dat = lidar_filtered[,i]
+rescaled1 = rescale(dat)
+rescaled = rescaled1
+
+for (i in 2:10){
+  dat = lidar_filtered[,i]
+  rescaled1 = rescale(dat)
+  rescaled = cbind(rescaled,rescaled1)
+  
+  }
+
+Richness_All = data.frame()
+Divergence_All= data.frame()
+Dssimilariry_All= data.frame()
+Evenness_All = data.frame()
+
+for (i in 1:656){
+  print(i)
+  Richness = fd_fric(rescaled[i,1:10])
+  Richness_All = rbind(Richness_All, Richness)
+}
+
+
+for (i in 1:656){
+  print(i)
+  Div = fd_fdiv(rescaled[i,1:10])
+  Divergence_All = rbind(Divergence_All, Div)
+}
+
+
+for (i in 1:656){
+  print(i)
+  Dis = fd_fdis(rescaled[i,1:10])
+  Dssimilariry_All = rbind(Dssimilariry_All, Dis)
+}
+
+
+for (i in 1:656){
+  print(i)
+  eve = fd_feve(rescaled[i,1:10])
+  Evenness_All = rbind(Evenness_All, eve)
+}
+
+
+funstional_All = data.frame(cbind(data$site,data$NLCD_plot_des,data$rel_cover_exotic,data$turnover,data$cover_exotic,Richness_All$FRic,Divergence_All$FDiv,Dssimilariry_All$FDis,Evenness_All$FEve))
+colnames(funstional_All) = c("site", "NLCD","rel_cov_exortic","turnover","cover_exortic","Rich","div","disperse","evenness")
+
+colnames(rescaled) = c("site","mean.max.canopy.ht.aop","rumple.aop","deepgap.fraction.aop" ,"cover.fraction.aop", "vert.sd.aop","vertCV.aop", "entropy.aop","GFP.AOP.aop","q25.aop", "q50.aop")
+
+functio_num =  funstional_All %>% select(where(is.numeric))
+
+write.csv(funstional_All, "funstional_All_plot_scale.csv")
+
+data_all = cbind(sp_tr_numeric,Richness_All$FRic,Divergence_All$FDiv,Dssimilariry_All$FDis,Evenness_All$FEve)
+
+
+
+#################################################
+scale_lidar = scale(lidar_filtered, center=TRUE, scale=TRUE) #standardized the data to have zero mean
+trait_dis = as.matrix(dist(rescaled)) # convert data into matrix
+
+fd_fric(rescaled)
 
 plot_div = read.csv("E:/forest_structural_diversity/data/plot_site_summaries.csv")
 plot_div$ID2 = paste0(plot_div$year,plot_div$plotID)
@@ -87,8 +183,12 @@ normalized<-function(y) {
 sp_tr3 = data.frame(apply(sp_tr_numeric,2,normalized))
 
 
-sp_tr2 = cbind(sp_tr$invaded,sp_tr2)
-sp_tr2 = sp_tr2[-823,] # gave a strange value in PCA. So removed for now.
+sp_tr3_ldr = cbind(sp_tr$cover_exotic,sp_tr3[,5:18])
+colnames(sp_tr3_ldr)[1] = "cover_exortic"
+
+sp_tr3_insitu = cbind(sp_tr$cover_exotic,sp_tr[,c(28:53,56,57,60:63)])
+colnames(sp_tr3_insitu)[1] = "cover_exortic"
+#sp_tr2 = sp_tr2[-823,] # gave a strange value in PCA. So removed for now.
 
 
 # Comm_ent = sp.to.fe(sp_tr2, tr_cat, fe_nm_type = "fe_rank", check_input = TRUE)
@@ -100,14 +200,14 @@ sp_tr2 = sp_tr2[-823,] # gave a strange value in PCA. So removed for now.
 
 # decorana (sp_tr2)
 dev.new(width = 3, height = 3)
-pairs.panels(sp_tr2[,-1],
+pairs.panels(sp_tr3_ldr[,-1],
              gap = 0,
-             bg = c("red", "blue")[sp_tr2$`sp_tr$invaded`],
+             bg = c("red", "blue")[sp_tr3$cover_exortic],
              pch=21)
 
 
 ##PCA analysis
-PCA_lidar <- prcomp(sp_tr2[,-1],
+PCA_lidar <- prcomp(sp_tr3_ldr[,-1],
              center = TRUE,
              scale. = TRUE)
 attributes(PCA_lidar)
@@ -120,20 +220,78 @@ head(summary(PCA_lidar))
 dev.new(width = 3, height = 3)
 pairs.panels(PCA_lidar$x,
              gap=0,
-             bg = c("red", "blue")[sp_tr2$`sp_tr$invaded`],
+             bg = c("red", "blue")[sp_tr3$cover_exortic],
              pch=21)
 
 
 
-dev.new(width = 3, height = 3)
-sitetype <- as.numeric (as.factor (sp_tr$invaded))
-ordiplot (PCA_lidar$x, display = 'sites', type = 'n', main = "Plot scale PCA lidar(invaded vs not invaded)")
+dev.new(width = 5, height = 3)
+sitetype <- as.numeric (as.factor (sp_tr$site))
+ordiplot (PCA_lidar$x, display = 'sites', type = 'n', main = "plot diversity - lidar(across sites)")
 points (PCA_lidar$x, pch = sitetype, col = sitetype)
 
 ## the most easy method (if your Group0 isn't alphabetical order, this method can't be used.)
-legend(x="bottomright", legend=levels(as.factor(sp_tr$invaded)), col=1:30, pch=1:30)
+legend(x="left", legend=levels(as.factor (sp_tr$site)), col=1:30, pch=1:30, pt.cex = 0.5)
 #  you can use seq.int(levels(MyMeta$Group)) instead of 1:7
 
+
+dev.new(width = 5, height = 3)
+sitetype <- as.numeric (as.factor (sp_tr$NLCD_code_plot))
+ordiplot (PCA_lidar$x, display = 'sites', type = 'n', main = "plot diversity - lidar(across sites)")
+points (PCA_lidar$x, pch = sitetype, col = sitetype)
+
+## the most easy method (if your Group0 isn't alphabetical order, this method can't be used.)
+legend(x="left", legend=levels(as.factor(sp_tr$NLCD_code_plot)), col=1:7, pch=1:7)
+#  you can use seq.int(levels(MyMeta$Group)) instead of 1:7
+
+
+#######################################
+# decorana (sp_tr2)
+dev.new(width = 3, height = 3)
+pairs.panels(sp_tr3_insitu[,-1],
+             gap = 0,
+             bg = c("red", "blue")[sp_tr3$cover_exortic],
+             pch=21)
+
+
+##PCA analysis
+PCA_lidar_insitu <- prcomp(sp_tr3_insitu[,-1],
+                    center = TRUE,
+                    scale. = TRUE)
+attributes(PCA_lidar_insitu)
+
+
+# PCA_lidar = rda(sp_tr2[,-1])
+
+head(summary(PCA_lidar_insitu))
+
+dev.new(width = 3, height = 3)
+pairs.panels(PCA_lidar_insitu$x,
+             gap=0,
+             bg = c("red", "blue")[sp_tr3$cover_exortic],
+             pch=21)
+
+
+
+
+dev.new(width = 5, height = 3)
+sitetype <- as.numeric (as.factor (sp_tr$site))
+ordiplot (PCA_lidar_insitu$x, display = 'sites', type = 'n', main = "plot diversity - lidar(across sites)")
+points (PCA_lidar_insitu$x, pch = sitetype, col = sitetype)
+
+## the most easy method (if your Group0 isn't alphabetical order, this method can't be used.)
+legend(x="left", legend=levels(as.factor (sp_tr$site)), col=1:30, pch=1:30, pt.cex = 0.5)
+#  you can use seq.int(levels(MyMeta$Group)) instead of 1:7
+
+
+dev.new(width = 5, height = 3)
+sitetype <- as.numeric (as.factor (sp_tr$NLCD_code_plot))
+ordiplot (PCA_lidar_insitu$x, display = 'sites', type = 'n', main = "plot diversity - lidar(across sites)")
+points (PCA_lidar_insitu$x, pch = sitetype, col = sitetype)
+
+## the most easy method (if your Group0 isn't alphabetical order, this method can't be used.)
+legend(x="left", legend=levels(as.factor(sp_tr$NLCD_code_plot)), col=1:7, pch=1:7)
+#  you can use seq.int(levels(MyMeta$Group)) instead of 1:7
 
 ### Bi_plots
 
@@ -146,7 +304,7 @@ dev.new(width = 3, height = 3)
 g <- ggbiplot(PCA_lidar,
               obs.scale = 1,
               var.scale = 1,
-              groups = sp_tr$invaded[-823],
+              groups = sp_tr$NLCD_code_plot,
               ellipse = TRUE,
               circle = TRUE,
               ellipse.prob = 0.68)
@@ -218,10 +376,10 @@ legend(x="bottomright",  cex=0.8,legend=levels(as.factor(lidar_cover$NLCD_Classe
 
 dev.new(width = 3, height = 3)
 if(require(rpart)){
-  model <- rpart(lidar_cover$invaded ~ max.canopy.ht.aop + rumple.aop+
-                   deepgaps.aop+deepgap.fraction.aop+cover.fraction.aop+ top.rugosity.aop + 
+  model <- rpart(sp_tr3_ldr$cover_exotic ~ mean.max.canopy.ht.aop + ax.canopy.ht.aop+
+                   rumple.aop+deepgap.fraction.aop+cover.fraction.aop+ top.rugosity.aop + 
                    vert.sd.aop + sd.sd.aop + entropy.aop + GFP.AOP.aop, 
-                 method = "class", data = sp_tr2)
+                 method = "class", data = sp_tr3)
   ddata <- dendro_data(model)
   ggplot() + 
     geom_segment(data = ddata$segments, 
