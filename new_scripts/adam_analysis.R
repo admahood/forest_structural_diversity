@@ -16,6 +16,11 @@ preds <- c("mean.max.canopy.ht.aop","rumple.aop",
            "slope_aspect","minElev ") 
 # higly correlated (r>80) vars: ,"q25.aop ","VCI.AOP.aop ""max.canopy.ht.aop", "cover.fraction.aop","vert.sd.aop","top.rugosity.aop",
 
+# update methods in google doc
+# add domain, site -- good random effect for LMM -  spatial regime model for lmm?
+# maybe do an NMDS as well
+# get climate normals from PRISM, aridity index
+#"cover.fraction.aop","vert.sd.aop","top.rugosity.aop",
 # super basic random forest analysis
 
 mods <- list()
