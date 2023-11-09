@@ -17,6 +17,7 @@ Finally, combines the plot-level plant cover and LiDAR data generated in the abo
 ### 6. Run download_aop_data.R script:
 Uses *plot_data_table.csv*, and for each plot, downloads hyperspectral data from NEON. Handles cases for single or multiple downloaded files for coordinate mapping to get the reflactance data. Processes the reflectance data and stores the final reflectance values for a plot with buffer in a .h5 format file along with relevant data for further PCA analysis. The final dataset is in AWS S3 bucket in: mukundkalantri.forestbiodiversity/AOP_Data/plot_level_AOP/. Dataset is too big to be uploaded here.
 
+[Link to the notes](https://docs.google.com/document/d/1pTPJg6BWXxq2Vb-DXVf0lTdZuVZJIdjda2F-eLGsHAo/edit)
 ----------------------------
 
 Case to be handled in the files above:
