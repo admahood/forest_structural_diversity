@@ -22,3 +22,8 @@ Uses *plot_data_table.csv*, and for each plot, downloads hyperspectral data from
 
 Case to be handled in the files above:
 In the download_lidar_data.R and the download_aop_data.R files, handling for the site BLAN needs to be done in a try catch block. This site has data in different UTM zone. The original UTM coordinates needs to be converted to new coordinates based on this UTM zone shift using some R tool/function. Once that is done, all the scripts can be run in the sequence as mentioned above and that should automatically take care of the new files to be generated for this site.
+
+
+google doc
+
+https://docs.google.com/document/d/1pTPJg6BWXxq2Vb-DXVf0lTdZuVZJIdjda2F-eLGsHAo/edit?usp=sharing
