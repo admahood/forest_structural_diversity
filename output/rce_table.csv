@@ -1,0 +1,12 @@
+effect,component,group,term,estimate,std.error,conf.low,conf.high
+fixed,cond,NA,(Intercept),472,103,269,670
+fixed,cond,NA,mean.max.canopy.ht.aop,-0.0197,0.0104,-0.0403,3.2e-4
+fixed,cond,NA,rumple.aop,0.187,0.0731,0.0411,0.328
+fixed,cond,NA,deepgap.fraction.aop,7.21,1.96,3.34,11.1
+fixed,cond,NA,entropy.aop,-1.58,0.718,-2.98,-0.177
+fixed,cond,NA,VAI.AOP.aop,0.0172,0.0372,-0.0524,0.0901
+fixed,cond,NA,vertCV.aop,-0.19,0.272,-0.714,0.351
+fixed,cond,NA,GFP.AOP.aop,-1.98,1.46,-4.78,1.02
+fixed,cond,NA,year,-0.235,0.0509,-0.333,-0.134
+ran_pars,cond,plotID,sd__(Intercept),0.688,0.0577,0.579,0.805
+ran_pars,cond,site,sd__(Intercept),1.45,0.241,1.07,1.99

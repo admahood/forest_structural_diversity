@@ -1,0 +1,13 @@
+resp,r2,mse,predlist
+rel_cover_exotic,0.947,0.0012,all
+rel_cover_exotic,0.843,0.00358,only_structure
+rel_cover_exotic,0.801,0.00454,not_structure
+shannon_native,0.911,0.0536,all
+shannon_native,0.853,0.0883,only_structure
+shannon_native,0.827,0.104,not_structure
+nspp_exotic,0.933,0.936,all
+nspp_exotic,0.849,2.1,only_structure
+nspp_exotic,0.824,2.45,not_structure
+nspp_native,0.944,38.6,all
+nspp_native,0.895,71.5,only_structure
+nspp_native,0.842,108,not_structure
