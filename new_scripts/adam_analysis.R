@@ -9,7 +9,7 @@ library(terra)
 dd <- read_csv("data_quality_control/forest_div_quality_control_v1.csv") %>%
   dplyr::mutate(latitude = latitude.x,
                 longitude = longitude.x,
-                folded_aspect = folded_aspect(aspect),
+                folded_aspect = get_folded_aspect(aspect),
                 cosign_aspect = cos(aspect),
                 slope_aspect = slope*cosign_aspect) %>%
   dplyr::select(-ends_with(".y"), -ends_with(".x"))
@@ -21,10 +21,10 @@ centroids <- read_csv("data/All_NEON_TOS_Plot_Centroids_V8.csv") %>%
   dplyr::select(latitude, longitude, plotID) %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
 
-bils <-list.files("data", 
-                        pattern = "bil$",
+# 30 year normals of ppt, mean temp, and VPD min and max (resolution 800m) from https://prism.oregonstate.edu/normals/
+bils <-list.files("data", recursive = T,
+                        pattern = "annual_bil.bil$",
                         full.names = TRUE) %>%
-  list.files(., pattern = "annual_bil.bil$", full.names=TRUE) %>%
   terra::rast() 
 
 norms <- centroids %>%
@@ -84,7 +84,7 @@ for(i in 1:length(resp)) {
     result_df[counter,2] <- mods[[counter]]$rsq %>% median() %>% signif(3)
     result_df[counter,3] <- mods[[counter]]$mse %>% median() %>% signif(3)
     result_df[counter,4] <- names(predlist)[j]
-    print(resp[i])
+    print(resp[i] |> paste(predlist[j]))
     counter <- counter + 1
   }
 }
