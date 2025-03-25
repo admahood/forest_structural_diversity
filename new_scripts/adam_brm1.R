@@ -5,6 +5,7 @@ library(sf)
 library(terra)
 library(brms)
 library(performance)
+library(ggrepel)
 
 # nlcd cover class
 # hurdle model? investigate zeros
@@ -45,6 +46,11 @@ pca$rotation |>
   ggplot(aes(x=PC1, y=PC2)) +
   geom_text_repel(aes(label = var))
 
+d_pca <- pca$x|>
+  as_tibble() |>
+  dplyr::select(order = PC1, sa_vol = PC2)
+
+d1 <- cbind(d, d_pca)
 
 
 # rn <- brm(nspp_notexotic ~ entropy + VAI + rumple + mean.max.canopy.ht + GFP + MAP + MAT + vpdmx + (1|site/year/plotID), 
