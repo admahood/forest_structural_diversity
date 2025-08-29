@@ -4,6 +4,7 @@
 library(tidyverse)
 library(brms)
 library(pdp)
+library(ggthemes)
 make_caterpillar <- function(mod, title, file){
   tidy(mod) %>%
     mutate(term = str_remove_all(term, ".AOP") %>% str_remove_all(".aop")) %>%
@@ -28,23 +29,43 @@ make_caterpillar <- function(mod, title, file){
     ggtitle(title)
   ggsave(filename = file, height = 3, width = 3.5, bg="white")
 }
-d <- read_csv("data_quality_control/forest_div_quality_control_v1.csv") %>%
-  dplyr::mutate(latitude = latitude.x,
-                longitude = longitude.x,
-                cosign_aspect = cos(aspect),
-                slope_aspect = slope*cosign_aspect)
+d <- read_csv('data/data_with_climate_norms.csv') |>
+  dplyr::select(-vertcv, -sd.sd, -vert.sd)
 glimpse(d)
 
+# bayesian zi beta tutorial: 
+# https://www.andrewheiss.com/blog/2021/11/08/beta-regression-guide/#zero-inflated-beta-regression-bayesian-style
+ff <-  bf(rel_cover_exotic ~ 
+            rumple +
+            entropy  +
+            (1|plotid) + (1|site),
+          phi ~ 1 ,
+            # rumple +
+            # entropy  +
+            # (1|plotid) + (1|site),
+          zi ~ 1
+            # rumple +
+            # nspp_native +
+            # folded_aspect +
+            # entropy +
+            # (1|plotid) + (1|site)
+            )
+
+brms::get_prior(ff, family = zero_inflated_beta(), data = d) -> pp
+
+priors <- c(set_prior("student_t(3, 0, 2.5)", class = "Intercept"),
+            set_prior("normal(0, 1)", class = "b"))
+
 if(!file.exists("data/rce_brm.rda")){
-  rce_brm <- brm(rel_cover_exotic ~ 
-              mean.max.canopy.ht.aop +
-              rumple.aop +
-              deepgap.fraction.aop +
-              entropy.aop +
-              VAI.AOP.aop +
-              vertCV.aop +
-              GFP.AOP.aop + 
-              year +  (1|plotID) + (1|site), data = d, family = "zero_inflated_beta")
+  rce_brm_zi <- brm(ff, data = d, 
+                    family = "zero_inflated_beta", 
+                    init = 0,
+                    control = list(adapt_delta = 0.97,
+                                   max_treedepth = 12),
+                    iter = 2000, warmup = 1000,
+                    cores = 4, seed = 1234, 
+                    file = 'rec_brms',
+                    prior = priors)
   save(rce_brm, file ="data/rce_brm.rda")
 }else{load("data/rce_brm.rda")}
 summary(rce_brm)
@@ -54,64 +75,7 @@ tidy(rce_brm) %>%
 ce <- conditional_effects(rce_brm, spaghetti=T, ndraws = 200)
 p <- plot(ce,plot=F, theme = theme(axis.title.y = element_blank()))
 ggsave(plot = wrap_plots(p) +
-  plot_annotation(title = "Exotic Dominance"), filename = "output/brmtest.png")
+  plot_annotation(title = "Relative Non-Native Abundance"), filename = "output/brmtest.png")
 
 
-library(RColorBrewer);cols<-brewer.pal(n = 2, name="Set1")
-if(!file.exists("data/nse_brm.rda")){
-  nse_brm <- brm(nspp_exotic ~ 
-                   mean.max.canopy.ht.aop +
-                   rumple.aop +
-                   deepgap.fraction.aop +
-                   entropy.aop +
-                   VAI.AOP.aop +
-                   vertCV.aop +
-                   GFP.AOP.aop + 
-                   year  + (1|plotID) + (1|site), data = d, family = "poisson")
-  save(nse_brm, file ="data/nse_brm.rda")
-}else{load("data/nse_brm.rda")}
 
-
-if(!file.exists("data/nsn_brm.rda")){
-  nsn_brm <- brm(nspp_native ~ 
-                   mean.max.canopy.ht.aop +
-                   rumple.aop +
-                   deepgap.fraction.aop +
-                   entropy.aop +
-                   VAI.AOP.aop +
-                   vertCV.aop +
-                   GFP.AOP.aop + 
-                   year  + (1|plotID) + (1|site), data = d, family = "poisson")
-  save(nsn_brm, file ="data/nsn_brm.rda")
-}else{load("data/nsn_brm.rda")}
-
-if(!file.exists("data/dvn_brm.rda")){
-  dvn_brm <- brm(shannon_native ~ 
-                   mean.max.canopy.ht.aop +
-                   rumple.aop +
-                   deepgap.fraction.aop +
-                   entropy.aop +
-                   VAI.AOP.aop +
-                   vertCV.aop +
-                   GFP.AOP.aop + 
-                   year  + (1|plotID) + (1|site), data = d, family = "gamma")
-  save(dvn_brm, file ="data/dvn_brm.rda")
-}else{load("data/dvn_brm.rda")}
-summary(dvn_brm)
-
-make_caterpillar(nse_brm, title = "Exotic Richness", file = "output/caterpillar_nse.png")
-make_caterpillar(nsn_brm, title = "Native Richness", file = "output/caterpillar_nsn.png")
-make_caterpillar(rce_brm, title = "Exotic Dominance", file = "output/caterpillar_rce.png")
-make_caterpillar(dvn_brm, title = "Native Diversity", file = "output/caterpillar_dvn.png")
-
-library(grid)
-library(patchwork)
-
-ce <- conditional_effects(nse_brm, spaghetti=T, ndraws = 200)
-p <- plot(ce,plot=F)
-wrap_plots(p)
-
-ce <- conditional_effects(rce_brm, spaghetti=T, ndraws = 200)
-p <- plot(ce,plot=F)
-wrap_plots(p)
-as_tibble(ce)

@@ -1,8 +1,8 @@
-NLCD_plot_des_main,mean_exotic_spp,percent_invaded_plots,mean_ir,mean_ii,n
-Deciduous forest,2.96,68.43,5.76,6.83,271
-Evergreen forest,2.15,50.88,4.49,3.03,460
-Grassland/herbaceous,6.23,87.54,16.19,26.01,77
-Mixed forest,2.15,58.12,3.33,1.2,50
-Pasture/hay,20.33,83.33,26.24,13.34,6
-Shrub/scrub,4.36,82.22,10.81,7.51,42
-Woody wetlands,2.47,82.12,4.48,4.56,171
+NLCD_plot_des_main,mean_exotic_spp,percent_invaded_plots,relative_richness_non_native,relative_abundance_non_native,n
+Deciduous forest,2.89,68.36,5.93,7.52,173
+Evergreen forest,1.85,45.42,3.97,2.5,308
+Grassland/herbaceous,3.78,81.04,7.51,9.96,26
+Mixed forest,2.13,58.67,3.35,1.17,41
+Pasture/hay,19.25,75,23.41,6.54,3
+Shrub/scrub,1.74,41.67,3.73,1.88,76
+Woody wetlands,2.22,73.7,3.93,4.1,113
